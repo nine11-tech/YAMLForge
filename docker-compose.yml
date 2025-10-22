@@ -1,0 +1,75 @@
+﻿version: '3.8'
+
+networks:
+  mgmt:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "172.20.0.0/24"
+  dmz:
+    driver: bridge  
+    ipam:
+      config:
+        - subnet: "172.21.0.0/24"
+  internal:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "172.22.0.0/24"
+  secure:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "172.23.0.0/24"
+
+services:
+  # Controller - where Ansible runs
+  controller:
+    image: ubuntu:22.04
+    container_name: ansible-controller
+    hostname: controller
+    networks:
+      mgmt:
+        ipv4_address: 172.20.0.100
+    volumes:
+      - ./workspace:/workspace
+    working_dir: /workspace
+    tty: true
+    stdin_open: true
+    command: /bin/bash -c "apt update && apt install -y python3 sudo && tail -f /dev/null"
+
+  # Web Server in DMZ
+  webserver:
+    image: ubuntu:22.04
+    container_name: ansible-webserver
+    hostname: webserver
+    networks:
+      dmz:
+        ipv4_address: 172.21.0.10
+    tty: true
+    stdin_open: true
+    command: /bin/bash -c "tail -f /dev/null"
+
+  # App Server in Internal
+  appserver:
+    image: ubuntu:22.04
+    container_name: ansible-appserver
+    hostname: appserver
+    networks:
+      internal:
+        ipv4_address: 172.22.0.10
+    tty: true
+    stdin_open: true
+    command: /bin/bash -c "tail -f /dev/null"
+
+  # DB Server in Secure
+  dbserver:
+    image: ubuntu:22.04
+    container_name: ansible-dbserver
+    hostname: dbserver
+    networks:
+      secure:
+        ipv4_address: 172.23.0.10
+    tty: true
+    stdin_open: true
+    command: /bin/bash -c "tail -f /dev/null"
