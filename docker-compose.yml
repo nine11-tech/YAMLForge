@@ -50,6 +50,9 @@ services:
       - ./workspace:/workspace          # mounts your Ansible project
     tty: true
     stdin_open: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
 
   # ----------------------------
   # Webserver (DMZ zone)
@@ -63,6 +66,9 @@ services:
         ipv4_address: 172.21.0.10
     tty: true
     stdin_open: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
 
   # ----------------------------
   # Appserver (Internal zone)
@@ -76,6 +82,9 @@ services:
         ipv4_address: 172.22.0.10
     tty: true
     stdin_open: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
 
   # ----------------------------
   # DBserver (Secure zone)
@@ -89,3 +98,6 @@ services:
         ipv4_address: 172.23.0.10
     tty: true
     stdin_open: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
