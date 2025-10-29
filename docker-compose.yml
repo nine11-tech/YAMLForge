@@ -1,5 +1,8 @@
-﻿version: '3.8'
+﻿version: "3.8"
 
+# ──────────────────────────────
+# 🔹 NETWORKS (same topology)
+# ──────────────────────────────
 networks:
   mgmt:
     driver: bridge
@@ -7,7 +10,7 @@ networks:
       config:
         - subnet: "172.20.0.0/24"
   dmz:
-    driver: bridge  
+    driver: bridge
     ipam:
       config:
         - subnet: "172.21.0.0/24"
@@ -22,25 +25,37 @@ networks:
       config:
         - subnet: "172.23.0.0/24"
 
+# ──────────────────────────────
+# 🔹 SERVICES (4 hosts)
+# ──────────────────────────────
 services:
-  # Controller - where Ansible runs
+
+  # ----------------------------
+  # Controller — Ansible master
+  # ----------------------------
   controller:
-    image: ubuntu:22.04
+    image: anasslakouti/yamlforge-controller:latest
     container_name: ansible-controller
     hostname: controller
     networks:
       mgmt:
         ipv4_address: 172.20.0.100
+      dmz:
+        ipv4_address: 172.21.0.100
+      internal:
+        ipv4_address: 172.22.0.100
+      secure:
+        ipv4_address: 172.23.0.100
     volumes:
-      - ./workspace:/workspace
-    working_dir: /workspace
+      - ./workspace:/workspace          # mounts your Ansible project
     tty: true
     stdin_open: true
-    command: /bin/bash -c "apt update && apt install -y python3 sudo && tail -f /dev/null"
 
-  # Web Server in DMZ
+  # ----------------------------
+  # Webserver (DMZ zone)
+  # ----------------------------
   webserver:
-    image: ubuntu:22.04
+    image: anasslakouti/yamlforge-node:latest
     container_name: ansible-webserver
     hostname: webserver
     networks:
@@ -48,11 +63,12 @@ services:
         ipv4_address: 172.21.0.10
     tty: true
     stdin_open: true
-    command: /bin/bash -c "tail -f /dev/null"
 
-  # App Server in Internal
+  # ----------------------------
+  # Appserver (Internal zone)
+  # ----------------------------
   appserver:
-    image: ubuntu:22.04
+    image: anasslakouti/yamlforge-node:latest
     container_name: ansible-appserver
     hostname: appserver
     networks:
@@ -60,11 +76,12 @@ services:
         ipv4_address: 172.22.0.10
     tty: true
     stdin_open: true
-    command: /bin/bash -c "tail -f /dev/null"
 
-  # DB Server in Secure
+  # ----------------------------
+  # DBserver (Secure zone)
+  # ----------------------------
   dbserver:
-    image: ubuntu:22.04
+    image: anasslakouti/yamlforge-node:latest
     container_name: ansible-dbserver
     hostname: dbserver
     networks:
@@ -72,4 +89,3 @@ services:
         ipv4_address: 172.23.0.10
     tty: true
     stdin_open: true
-    command: /bin/bash -c "tail -f /dev/null"
