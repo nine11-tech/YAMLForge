@@ -1,4 +1,5 @@
 {
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
   "ansible.validation.lint.enabled": false,
   "ansible.executionEnvironment.enabled": false,
   "ansible.python.interpreterPath": "/usr/bin/python3",
