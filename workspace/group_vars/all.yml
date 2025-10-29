@@ -1,30 +1,15 @@
 ---
-# Virtual network zones definition
-vlans:
-  - id: 10
-    name: dmz
-    subnet: 192.168.10.0/24
-  - id: 20
-    name: internal
-    subnet: 192.168.20.0/24
-  - id: 30
-    name: secure
-    subnet: 192.168.30.0/24
+# Global variables
+ansible_python_interpreter: /usr/bin/python3
 
-# Example firewall rules (logical only for now)
+vlans:
+  - { id: 20, name: "MGMT", subnet: "172.20.0.0/24" }
+  - { id: 21, name: "DMZ", subnet: "172.21.0.0/24" }
+  - { id: 22, name: "INTERNAL", subnet: "172.22.0.0/24" }
+  - { id: 23, name: "SECURE", subnet: "172.23.0.0/24" }
+
 firewall_rules:
-  - name: allow_http_dmz
-    src: any
-    dst: 192.168.10.0/24
-    port: 80
-    action: allow
-  - name: allow_app_to_db
-    src: 192.168.20.0/24
-    dst: 192.168.30.0/24
-    port: 3306
-    action: allow
-  - name: deny_all
-    src: any
-    dst: any
-    port: any
-    action: deny
+  - { zone: "dmz", allow: ["80/tcp", "443/tcp"] }
+  - { zone: "internal", allow: ["8080/tcp"] }
+  - { zone: "secure", allow: ["3306/tcp"] }
+  - { zone: "mgmt", allow: ["22/tcp"] }
