@@ -1,0 +1,53 @@
+---
+# roles/app/tasks/main.yml
+
+- name: Install Python and app dependencies
+  apt:
+    name:
+      - python3
+      - python3-pip
+      - curl
+    state: present
+  become: yes
+
+- name: Create app directory
+  file:
+    path: /opt/myapp
+    state: directory
+    mode: '0755'
+  become: yes
+
+- name: Deploy sample app file
+  copy:
+    dest: /opt/myapp/app.py
+    content: |
+      from http.server import SimpleHTTPRequestHandler, HTTPServer
+      server = HTTPServer(('0.0.0.0', 8080), SimpleHTTPRequestHandler)
+      print("App server running on port 8080")
+      server.serve_forever()
+  become: yes
+
+- name: Create systemd service (if available)
+  copy:
+    dest: /etc/systemd/system/myapp.service
+    content: |
+      [Unit]
+      Description=Simple Python App
+      After=network.target
+
+      [Service]
+      ExecStart=/usr/bin/python3 /opt/myapp/app.py
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target
+  become: yes
+  when: "'/etc/systemd/system' is directory"
+
+- name: Start app service manually (Docker)
+  shell: "nohup python3 /opt/myapp/app.py &"
+  args:
+    chdir: /opt/myapp
+  async: 10
+  poll: 0
+  become: yes

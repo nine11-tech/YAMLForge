@@ -1,0 +1,7 @@
+---
+secure_services:
+  - mysql-server
+  - ufw
+db_policy:
+  allowed_ports:
+    - 3306

@@ -1,0 +1,7 @@
+---
+- name: Deploy internal application server
+  hosts: app01
+  become: yes
+
+  roles:
+    - app

@@ -1,0 +1,10 @@
+{
+  "ansible.python.interpreterPath": "/usr/bin/python3",
+  "ansible.executionEnvironment.enabled": false,
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/ansible/schemas/main/f/ansible-playbook.json": "playbooks/*.yml"
+  },
+  "files.associations": {
+    "*.yml": "ansible"
+  }
+}
