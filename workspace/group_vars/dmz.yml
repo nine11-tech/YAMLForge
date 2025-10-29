@@ -1,0 +1,8 @@
+---
+dmz_services:
+  - apache2
+  - ufw
+dmz_policy:
+  allowed_ports:
+    - 80
+    - 443

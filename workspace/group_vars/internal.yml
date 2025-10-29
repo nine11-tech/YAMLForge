@@ -1,0 +1,7 @@
+---
+internal_services:
+  - python3
+  - curl
+app_policy:
+  allowed_ports:
+    - 8080

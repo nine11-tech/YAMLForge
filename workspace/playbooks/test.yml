@@ -1,7 +1,7 @@
 ---
-- name: Ping all servers
+- name: Validate SSH access for all zones
   hosts: all
   gather_facts: no
   tasks:
-    - name: Test connection
-      ping:
+    - name: Check hostname
+      command: hostname
