@@ -1,0 +1,79 @@
+---
+# roles/db/tasks/main.yml
+# Deploy and configure MySQL database in Docker-compatible environment
+
+- name: Install MySQL server and dependencies
+  apt:
+    name:
+      - mysql-server
+      - python3-pymysql
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Fix MySQL data directory ownership
+  file:
+    path: /var/lib/mysql
+    owner: mysql
+    group: mysql
+    recurse: yes
+  become: yes
+
+- name: Ensure MySQL is running (Docker compatible)
+  shell: |
+    nohup mysqld_safe --skip-networking=0 --bind-address=0.0.0.0 &
+  async: 10
+  poll: 0
+  become: yes
+
+# 🕒 WAIT until MySQL is actually up and ready
+- name: Wait for MySQL socket to become available
+  wait_for:
+    path: /var/run/mysqld/mysqld.sock
+    state: present
+    delay: 5
+    timeout: 40
+  become: yes
+
+- name: Configure MySQL bind address
+  template:
+    src: mysql.cnf.j2
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+    mode: '0644'
+  become: yes
+  notify: restart mysql
+
+# 👤 Create Ansible admin user safely
+- name: Create ansible admin user
+  shell: |
+    mysql --protocol=socket -e "CREATE USER IF NOT EXISTS 'ansible'@'localhost' IDENTIFIED BY 'ansiblepass';"
+    mysql --protocol=socket -e "GRANT ALL PRIVILEGES ON *.* TO 'ansible'@'localhost' WITH GRANT OPTION;"
+    mysql --protocol=socket -e "FLUSH PRIVILEGES;"
+  become: yes
+
+# ✅ Wait for TCP port (network MySQL)
+- name: Wait for MySQL to become available on port 3306
+  wait_for:
+    port: 3306
+    delay: 3
+    timeout: 30
+
+# 💾 Create app database and user
+- name: Create application database
+  mysql_db:
+    name: app_db
+    state: present
+    login_user: ansible
+    login_password: ansiblepass
+  become: yes
+
+- name: Create app user
+  mysql_user:
+    name: appuser
+    password: "strongpassword"
+    priv: 'app_db.*:ALL'
+    host: '%'
+    state: present
+    login_user: ansible
+    login_password: ansiblepass
+  become: yes

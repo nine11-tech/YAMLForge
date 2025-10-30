@@ -1,12 +1,15 @@
 {
   "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.shellIntegration.enabled": false,
+  "ansible.validation.enabled": false,
   "ansible.validation.lint.enabled": false,
   "ansible.executionEnvironment.enabled": false,
-  "ansible.python.interpreterPath": "/usr/bin/python3",
+  "ansible.ansiblePath": "ansible",
   "yaml.schemas": {
     "https://raw.githubusercontent.com/ansible/schemas/main/f/ansible-playbook.json": "playbooks/*.yml"
   },
   "files.associations": {
     "*.yml": "ansible"
-  }
+  },
+  "ansible.python.interpreterPath": "c:\\Users\\anass\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe"
 }

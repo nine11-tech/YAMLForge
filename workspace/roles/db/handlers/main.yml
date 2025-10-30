@@ -1,0 +1,7 @@
+---
+# roles/db/handlers/main.yml
+- name: restart mysql
+  shell: |
+    pkill mysqld || true
+    nohup mysqld_safe &
+  become: yes

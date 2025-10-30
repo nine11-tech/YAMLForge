@@ -1,0 +1,7 @@
+---
+- name: Deploy and configure MySQL database server
+  hosts: db01
+  become: yes
+
+  roles:
+    - db
