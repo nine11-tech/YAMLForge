@@ -1,0 +1,31 @@
+---
+# roles/web/tasks/main.yml
+
+- name: Install Apache web server
+  apt:
+    name: apache2
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Ensure Apache listens on all interfaces
+  lineinfile:
+    path: /etc/apache2/ports.conf
+    regexp: '^Listen'
+    line: 'Listen 0.0.0.0:80'
+  become: yes
+
+- name: Enable and start Apache service (Docker workaround)
+  shell: |
+    nohup apachectl -DFOREGROUND &
+  async: 10
+  poll: 0
+  become: yes
+
+- name: Deploy website index page
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    mode: '0644'
+  become: yes
+  notify: restart apache
