@@ -1,0 +1,7 @@
+---
+- name: Configure Apache SSL and security in DMZ zone
+  hosts: web01
+  become: yes
+
+  roles:
+    - web_ssl

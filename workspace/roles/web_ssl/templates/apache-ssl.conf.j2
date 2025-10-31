@@ -1,0 +1,21 @@
+<VirtualHost *:443>
+    ServerAdmin admin@dmz-web.local
+    DocumentRoot /var/www/html
+    ServerName dmz-web.local
+
+    SSLEngine on
+    SSLCertificateFile /etc/apache2/ssl/selfsigned.crt
+    SSLCertificateKeyFile /etc/apache2/ssl/selfsigned.key
+
+    <Directory /var/www/html>
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/ssl-error.log
+    CustomLog ${APACHE_LOG_DIR}/ssl-access.log combined
+</VirtualHost>
+
+<VirtualHost *:80>
+    Redirect permanent / https://dmz-web.local/
+</VirtualHost>
