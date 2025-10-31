@@ -1,0 +1,5 @@
+---
+# roles/app_config/handlers/main.yml
+- name: restart app
+  shell: "pkill -f app.py && nohup python3 /opt/myapp/app.py &"
+  become: yes

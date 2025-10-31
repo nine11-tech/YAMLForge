@@ -1,0 +1,21 @@
+---
+# roles/app_config/tasks/main.yml
+
+- name: Create app environment file
+  template:
+    src: app.env.j2
+    dest: /opt/myapp/.env
+    mode: '0644'
+  become: yes
+
+- name: Deploy app configuration file
+  template:
+    src: app_config.py.j2
+    dest: /opt/myapp/app_config.py
+    mode: '0644'
+  become: yes
+
+- name: Restart application service
+  shell: "pkill -f app.py && nohup python3 /opt/myapp/app.py &"
+  become: yes
+  notify: restart app

@@ -1,0 +1,7 @@
+---
+- name: Configure internal app and link it to the database
+  hosts: app01
+  become: yes
+
+  roles:
+    - app_config
