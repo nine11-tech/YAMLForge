@@ -1,0 +1,50 @@
+---
+# roles/web_ssl/tasks/main.yml
+
+- name: Ensure OpenSSL is installed
+  apt:
+    name: openssl
+    state: present
+  become: yes
+
+- name: Create SSL directory
+  file:
+    path: /etc/apache2/ssl
+    state: directory
+    mode: '0755'
+  become: yes
+
+- name: Generate self-signed certificate if missing
+  command: >
+    openssl req -x509 -nodes -days 365
+    -subj "/C=MA/ST=Casablanca/L=ENSA/O=YAMLForge/OU=Infra/CN=dmz-web"
+    -newkey rsa:2048 -keyout /etc/apache2/ssl/selfsigned.key
+    -out /etc/apache2/ssl/selfsigned.crt
+  args:
+    creates: /etc/apache2/ssl/selfsigned.crt
+  become: yes
+
+- name: Enable SSL module
+  command: a2enmod ssl
+  become: yes
+
+- name: Deploy Apache SSL configuration
+  template:
+    src: apache-ssl.conf.j2
+    dest: /etc/apache2/sites-available/ssl-site.conf
+  become: yes
+  notify: restart apache
+
+- name: Enable SSL site
+  command: a2ensite ssl-site.conf
+  become: yes
+
+- name: Disable default HTTP site
+  command: a2dissite 000-default.conf
+  become: yes
+
+- name: Restart Apache
+  service:
+    name: apache2
+    state: restarted
+  become: yes

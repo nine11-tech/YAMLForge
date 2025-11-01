@@ -1,13 +1,9 @@
 ---
 - name: Simulate network zone setup
-  hosts: localhost
-  gather_facts: no
+  hosts: all
+  gather_facts: false
 
   tasks:
-    - name: Load network definitions manually
-      include_vars:
-        file: ../group_vars/all.yml
-
     - name: Display defined VLANs
       debug:
         var: vlans

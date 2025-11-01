@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>YAMLForge DMZ Web Server</title>
+    <style>
+      body { font-family: Arial; background: #101820; color: #f2aa4c; text-align: center; margin-top: 100px; }
+      h1 { font-size: 40px; }
+      p { color: #ddd; }
+    </style>
+  </head>
+  <body>
+    <h1> Welcome to YAMLForge DMZ Web Server</h1>
+    <p>Deployed automatically using Ansible + YAML</p>
+    <p>Host: {{ inventory_hostname }}</p>
+  </body>
+</html>

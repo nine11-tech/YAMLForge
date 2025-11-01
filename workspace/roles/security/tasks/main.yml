@@ -1,0 +1,63 @@
+---
+# roles/security/tasks/main.yml
+
+- name: Ensure UFW is installed
+  apt:
+    name: ufw
+    state: present
+  become: yes
+
+- name: Reset UFW rules
+  ufw:
+    state: reset
+  become: yes
+
+- name: Set default policies
+  ufw:
+    direction: incoming
+    policy: deny
+  become: yes
+
+- name: Allow SSH access
+  ufw:
+    rule: allow
+    port: 22
+    proto: tcp
+  become: yes
+
+- name: Apply DMZ firewall rules
+  when: "'dmz' in group_names"
+  loop:
+    - 80
+    - 443
+  become: yes
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+
+- name: Apply Internal firewall rules
+  when: "'internal' in group_names"
+  loop:
+    - 8080
+  become: yes
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+
+- name: Apply Secure zone firewall rules
+  when: "'secure' in group_names"
+  loop:
+    - 3306
+  become: yes
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+
+- name: Enable UFW firewall
+  ufw:
+    state: enabled
+  become: yes
+

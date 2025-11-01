@@ -1,0 +1,8 @@
+---
+# roles/web/handlers/main.yml
+
+- name: restart apache
+  shell: |
+    pkill apache2 || true
+    nohup apachectl -DFOREGROUND &
+  become: yes

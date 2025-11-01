@@ -1,0 +1,7 @@
+---
+- name: Deploy and configure centralized monitoring node
+  hosts: controller
+  become: yes
+
+  roles:
+    - monitoring

@@ -1,0 +1,7 @@
+---
+- name: Deploy and configure web server in DMZ zone
+  hosts: web01
+  become: yes
+
+  roles:
+    - web
