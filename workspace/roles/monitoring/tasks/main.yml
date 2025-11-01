@@ -1,0 +1,39 @@
+---
+# roles/monitoring/tasks/main.yml
+
+- name: Install rsyslog and net-tools
+  apt:
+    name:
+      - rsyslog
+      - net-tools
+    state: present
+  become: yes
+
+- name: Enable UDP logging input
+  lineinfile:
+    path: /etc/rsyslog.conf
+    regexp: '^#?module\(load="imudp"\)'
+    line: 'module(load="imudp")'
+  become: yes
+
+- name: Enable UDP server
+  lineinfile:
+    path: /etc/rsyslog.conf
+    regexp: '^#?input\(type="imudp" port="514"\)'
+    line: 'input(type="imudp" port="514")'
+  become: yes
+
+- name: Deploy central rsyslog configuration
+  template:
+    src: rsyslog.conf.j2
+    dest: /etc/rsyslog.d/central.conf
+  become: yes
+  notify: restart rsyslog
+
+- name: Create log collector script
+  template:
+    src: collect.sh.j2
+    dest: /usr/local/bin/collect_logs.sh
+    mode: '0755'
+  become: yes
+

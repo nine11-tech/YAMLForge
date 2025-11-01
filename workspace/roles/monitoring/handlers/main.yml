@@ -1,0 +1,7 @@
+---
+# roles/monitoring/handlers/main.yml
+- name: restart rsyslog
+  service:
+    name: rsyslog
+    state: restarted
+  become: yes

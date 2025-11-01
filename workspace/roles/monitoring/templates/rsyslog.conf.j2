@@ -1,0 +1,3 @@
+# Centralized logging for YAMLForge
+$template LogFormat,"%HOSTNAME% %syslogtag%%msg%\n"
+*.* /var/log/central.log;LogFormat
