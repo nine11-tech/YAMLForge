@@ -1,0 +1,8 @@
+---
+- name: Validate complete environment and service connectivity
+  hosts: localhost
+  gather_facts: yes
+  connection: local
+
+  roles:
+    - validation
