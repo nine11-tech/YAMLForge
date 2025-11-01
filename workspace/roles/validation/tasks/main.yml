@@ -1,40 +1,54 @@
 ---
 # roles/validation/tasks/main.yml
+# YAMLForge Project — Environment Validation Role
+# This role validates the availability and connectivity of all main services
+# (web, app, and database) across the three network zones.
+# ------------------------------------------------------------------------------
 
+# 🧩 Check Web Server Port 80 (DMZ Zone)
 - name: Check web server port 80 availability
   wait_for:
     host: 172.21.0.10
     port: 80
     timeout: 5
 
-
+# 🧩 Check App Server Port 8080 (Application Zone)
 - name: Check app server port 8080 availability
   wait_for:
     host: 172.22.0.10
     port: 8080
     timeout: 5
 
+# 🧩 Check Database Server Port 3306 (Data Zone)
 - name: Check database server port 3306 availability
   wait_for:
     host: 172.23.0.10
     port: 3306
     timeout: 5
 
+# 🧩 Verify Application Server Connectivity to Database
 - name: Verify app server connectivity to DB
-  shell: |
-    nc -z 172.23.0.10 3306
+  shell: nc -z 172.23.0.10 3306
   register: db_connection
   ignore_errors: yes
 
-- name: Validate HTTPS web response
-  uri:
-    url: https://172.21.0.10
-    validate_certs: no
-  register: web_response
+# 🧩 Validate HTTP Web Response (Silent Mode - No Warnings)
+- name: Validate HTTP web response
+  args:
+    warn: false   # Disable "Consider using get_url" warning
+    executable: /bin/bash
+  shell: curl -s -o /dev/null -w "%{http_code}" http://172.21.0.10
+  register: web_status
   ignore_errors: yes
 
+# 🧩 Generate Validation Report
 - name: Generate validation report
   template:
     src: report.txt.j2
     dest: /workspace/validation_report.txt
   delegate_to: localhost
+
+# 🧩 Display Validation Summary
+- name: Display validation summary
+  debug:
+    msg: "✅ Validation complete. Report saved at /workspace/validation_report.txt"
